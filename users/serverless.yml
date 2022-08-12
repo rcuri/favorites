@@ -1,0 +1,161 @@
+service: users
+frameworkVersion: '3.21.0'
+plugins:
+  - serverless-pseudo-parameters
+  - serverless-python-requirements
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  versionFunctions: false
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  environment:
+    FAVORITES_USER_POOL_ID: '#{FavoritesUserPool}'
+    FAVORITES_USER_POOL_CLIENT_ID: '#{CognitoFavoritesPoolClient}'
+    AWAITING_VERIFICATION_GROUP_NAME: ${self:custom.AWAITING_VERIFICATION_GROUP_NAME}
+    AWAITING_VERIFICATION_ROLE_NAME: ${self:custom.AWAITING_VERIFICATION_ROLE_NAME}
+    CONFIRMED_USER_GROUP_NAME: ${self:custom.CONFIRMED_USER_GROUP_NAME}
+    CONFIRMED_USER_ROLE_NAME: ${self:custom.CONFIRMED_USER_ROLE_NAME}   
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'cognito-idp:AdminAddUserToGroup'
+      Resource: 
+        Fn::GetAtt: [FavoritesUserPool, Arn]
+
+custom:
+  AWAITING_VERIFICATION_GROUP_NAME: ${self:provider.stage}-${self:service}-verification-pending-group
+  AWAITING_VERIFICATION_ROLE_NAME: ${self:provider.stage}-${self:service}-verification-pending-role
+  CONFIRMED_USER_GROUP_NAME: ${self:provider.stage}-${self:service}-confirmed-user-group
+  CONFIRMED_USER_ROLE_NAME: ${self:provider.stage}-${self:service}-confirmed-user-role  
+  FAVORITES_USER_POOL_NAME: ${self:provider.stage}-${self:service}-favorites-user-pool
+  FAVORITES_USER_POOL_CLIENT: ${self:provider.stage}-${self:service}-favorites-user-pool-client
+functions:
+  sign_up:
+    handler: src/handlers/sign_up.handler
+    events:
+      - httpApi:
+          path: /sign_up
+          method: POST
+  sign_in:
+    handler: src/handlers/sign_in.handler
+    events:
+      - httpApi:
+          path: /sign_in
+          method: POST   
+  confirm_email_address:
+    handler: src/handlers/confirm_email_address.handler
+    events:
+      - httpApi:
+          path: /confirm_email_address
+          method: POST                  
+resources:
+  Resources:    
+    AwaitingVerificationGroup:
+      Type: 'AWS::Cognito::UserPoolGroup'
+      Properties:
+        Description: Users in group have access limited until email is verified
+        GroupName: ${self:custom.AWAITING_VERIFICATION_GROUP_NAME}
+        RoleArn:
+          Fn::GetAtt: [ AwaitingVerificationRole, Arn ]
+        UserPoolId: '#{FavoritesUserPool}'
+    AwaitingVerificationRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: 'sts:AssumeRole'
+        RoleName: ${self:custom.AWAITING_VERIFICATION_ROLE_NAME}
+        Policies:
+          - PolicyName: PendingVerificationLimitedAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - 'lambda:InvokeFunction'
+                  Resource: '*'
+    ConfirmedUserGroup:
+      Type: 'AWS::Cognito::UserPoolGroup'
+      Properties:
+        Description: Users in group have access limited until email is verified
+        GroupName: ${self:custom.CONFIRMED_USER_GROUP_NAME}
+        RoleArn:
+          Fn::GetAtt: [ AwaitingVerificationRole, Arn ]
+        UserPoolId: '#{FavoritesUserPool}'
+    ConfirmedUserRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: 'sts:AssumeRole'
+        RoleName: ${self:custom.CONFIRMED_USER_ROLE_NAME}
+        Policies:
+          - PolicyName: PendingVerificationLimitedAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: 'Allow'
+                  Action:
+                    - 'lambda:InvokeFunction'
+                  Resource: '*'                  
+    FavoritesUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:custom.FAVORITES_USER_POOL_NAME}
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+        Schema:
+          - AttributeDataType: String
+            Name: email
+            Required: true
+          - AttributeDataType: String
+            Name: first_name
+            Mutable: true
+          - AttributeDataType: String
+            Name: last_name
+            Mutable: true
+    CognitoFavoritesPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: '#{FavoritesUserPool}'
+        ClientName: ${self:custom.FAVORITES_USER_POOL_CLIENT}
+        GenerateSecret: false
+        ExplicitAuthFlows:
+          - ALLOW_USER_PASSWORD_AUTH
+          - ALLOW_REFRESH_TOKEN_AUTH
+        TokenValidityUnits:
+          AccessToken: 'minutes'
+          RefreshToken: 'days'
+        RefreshTokenValidity: 1
+        AccessTokenValidity: 10
+  Outputs:
+    favoritesUserPool:
+      Value:
+        Ref: FavoritesUserPool
+    favoritesUserPoolClientArn:
+      Value:
+        Ref: CognitoFavoritesPoolClient
+    userPoolArn:
+      Value:
+        Fn::GetAtt: [FavoritesUserPool, Arn]
+    userPoolProviderName:
+      Value:
+        Fn::GetAtt: [FavoritesUserPool, ProviderName]
+    userPoolProviderURL:
+      Value:
+        Fn::GetAtt: [FavoritesUserPool, ProviderURL]

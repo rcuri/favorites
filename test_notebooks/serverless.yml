@@ -1,0 +1,127 @@
+service: favorites
+frameworkVersion: '3.21.0'
+plugins:
+  - serverless-python-requirements
+provider:
+  name: aws
+  stage: ${opt:stage, 'dev'}
+  versionFunctions: false
+  runtime: python3.8
+  lambdaHashingVersion: 20201221  
+  environment:
+    FAVORITES_TABLE_NAME: ${self:custom.FAVORITES_TABLE_NAME}
+    USERS_SIGN_UP_URL: ${param:users_sign_up_url}
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - 'dynamodb:PutItem'
+        - 'dynamodb:Query'
+        - 'dynamodb:UpdateItem'
+      Resource:
+        Fn::GetAtt: [FavoritesDynamoDBTable, Arn]
+custom:
+  FAVORITES_TABLE_NAME: ${self:provider.stage}-${self:service}-favorites-table
+  USERS_AUTHORIZER_ARN: ${param:users_authorizer_arn}  
+functions:
+  sign_up:
+    handler: src/handlers/sign_up.handler
+    events:
+      - http:
+          path: sign_up
+          method: post
+  create_list:
+    handler: src/handlers/create_favorites_list.handler
+    events:
+      - httpApi:
+          path: /create_list
+          method: POST
+  update_list_metadata:
+    handler: src/handlers/update_list_metadata.handler
+    events:
+      - http:
+          path: update_list_metadata
+          method: post
+  update_list_contents:
+    handler: src/handlers/update_list_contents.handler
+    events:
+      - http:
+          path: update_list_contents
+          method: post
+  get_user_by_email:
+    handler: src/handlers/get_user_by_email.handler
+    events:
+      - http:
+          path: get_user_by_email
+          method: post                          
+  get_list_by_list_id:
+    handler: src/handlers/get_list_by_list_id.handler
+    private: true
+    events:
+      - http:
+          path: get_list_by_list_id
+          method: post
+          authorizer:
+            name: cognitoAuthorizer
+            arn: ${self:custom.USERS_AUTHORIZER_ARN}
+            resultTtlInSeconds: 300
+            type: COGNITO_USER_POOLS
+  list_all_lists_per_user:
+    handler: src/handlers/list_all_lists_per_user.handler
+    events:
+      - http:
+          path: list_all_lists_per_user
+          method: post  
+  list_all_history_per_list_id:
+    handler: src/handlers/list_all_history_per_list_id.handler
+    events:
+      - http:
+          path: list_all_history_per_list_id
+          method: post
+resources:
+  Resources:
+    FavoritesDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        TableName: ${self:custom.FAVORITES_TABLE_NAME}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+    PutItemDynamoDBRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: PutItemDynamoDBRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: PutItemPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    Fn::GetAtt: [FavoritesDynamoDBTable, Arn]                  
+
+  Outputs:
+    tableName:
+      Value: ${self:custom.FAVORITES_TABLE_NAME}
+    tableArn:
+      Value:
+        Fn::GetAtt: [FavoritesDynamoDBTable, Arn]

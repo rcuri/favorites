@@ -1,0 +1,8 @@
+services:
+  favorites:
+    path: fav_list
+    params:
+      users_authorizer_issuer_url: ${users.userPoolProviderURL}
+      user_pool_client_arn: ${users.favoritesUserPoolClientArn}
+  users:
+    path: users
