@@ -1,27 +1,11 @@
 import json
-import boto3
-import os
-import uuid
-from boto3.dynamodb.conditions import Key
-from botocore.exceptions import ClientError
-from http import HTTPStatus
-from decimal import Decimal
+from .index import get_list_by_id
+from aws_lambda_powertools import Logger, Tracer
+
+logger = Logger(service="get_list_by_id")
 
 
-dynamodb = boto3.resource('dynamodb')
-table = dynamodb.Table(os.environ['FAVORITES_TABLE_NAME'])
-
-
+@logger.inject_lambda_context(log_event=True)
 def handler(event, context):
-    print(event)
-    print(context)
-    response = {
-        "event": event
-    }
-    response = json.dumps(response)
-    try:
-        print(response)
-        body = json.loads(event['body'])
-    except Exception as e:
-        print(e)
+    body = json.loads(event['body'])
     return get_list_by_id(body['list_id'])

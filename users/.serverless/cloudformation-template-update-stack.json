@@ -185,7 +185,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/users/dev/1660219049536-2022-08-11T11:57:29.536Z/users.zip"
+          "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
         },
         "Handler": "src/handlers/sign_up.handler",
         "Runtime": "python3.8",
@@ -224,7 +224,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/users/dev/1660219049536-2022-08-11T11:57:29.536Z/users.zip"
+          "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
         },
         "Handler": "src/handlers/sign_in.handler",
         "Runtime": "python3.8",
@@ -263,7 +263,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/users/dev/1660219049536-2022-08-11T11:57:29.536Z/users.zip"
+          "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
         },
         "Handler": "src/handlers/confirm_email_address.handler",
         "Runtime": "python3.8",

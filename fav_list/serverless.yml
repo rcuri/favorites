@@ -29,41 +29,34 @@ custom:
   FAVORITES_TABLE_NAME: ${self:provider.stage}-${self:service}-favorites-table
 functions:
   sign_up:
-    handler: src/handlers/sign_up.handler
+    handler: src/functions/sign_up/handler.handler
     events:
       - httpApi:
           path: /users
           method: POST
   create_list:
-    handler: src/handlers/create_favorites_list.handler
+    handler: src/functions/create_list/handler.handler
     events:
       - httpApi:
           path: /lists
           method: POST
           authorizer: serviceAuthorizer
   update_list_metadata:
-    handler: src/handlers/update_list_metadata.handler
+    handler: src/functions/update_list_metadata/handler.handler
     events:
       - httpApi:
           path: /lists/{list_id}
           method: PUT
           authorizer: serviceAuthorizer
   update_list_contents:
-    handler: src/handlers/update_list_contents.handler
+    handler: src/functions/update_list_contents/handler.handler
     events:
       - httpApi:
           path: /lists/{list_id}
           method: POST
           authorizer: serviceAuthorizer
-  get_user_by_email:
-    handler: src/handlers/get_user_by_email.handler
-    events:
-      - httpApi:
-          path: /users/{email}
-          method: POST    
-          authorizer: serviceAuthorizer
   get_list_by_list_id:
-    handler: src/handlers/get_list_by_list_id.handler
+    handler: src/functions/get_list/handler.handler
     private: true
     events:
       - httpApi:
@@ -71,7 +64,7 @@ functions:
           method: GET
           authorizer: serviceAuthorizer
   list_all_lists_per_user:
-    handler: src/handlers/list_all_lists_per_user.handler
+    handler: src/functions/get_user_lists/handler.handler
     events:
       - httpApi:
           path: /users/{email}/lists
@@ -84,6 +77,13 @@ functions:
           path: /list_all_history_per_list_id
           method: GET
           authorizer: serviceAuthorizer
+  get_user_by_email:
+    handler: src/handlers/get_user_by_email.handler
+    events:
+      - httpApi:
+          path: /users/{email}
+          method: POST    
+          authorizer: serviceAuthorizer          
 resources:
   Resources:
     FavoritesDynamoDBTable:
