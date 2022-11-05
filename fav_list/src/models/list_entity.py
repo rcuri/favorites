@@ -1,20 +1,20 @@
 from src.util import build_update_expression
 import uuid
+import os
 
 
 class ListEntity:
-    def __init__(self, item=None):
-        if item is None:
-            item = {}
-        self.list_id = item['PK']
-        self.name = item['SK']
-        self.list_data = item['data']
+    def __init__(self):
+        self.table_name = os.environ['FAVORITES_TABLE_NAME']
+        self.list_id = self.generate_list_id()
         self.list_size = 20
+        self.favorites_list = self.create_list_item()
 
 
-    def update_list_item(self, table_name):
+    @classmethod
+    def update_list_item(cls, list_id, list_data, table_name):
         items = []
-        for item in self.list_data:
+        for item in list_data:
             list_item = {
                 "Update": {
                     "TableName": table_name,
@@ -35,6 +35,15 @@ class ListEntity:
             items.append(list_item)            
         return items
 
+    def get_list_size(self):
+        return self.list_size
+
+    def get_list_id(self):
+        return self.list_id
+
+    def get_list_items(self):
+        return self.favorites_list
+
     def generate_list_id(self, prefix=None):
         if not prefix:
             prefix = ""
@@ -42,8 +51,33 @@ class ListEntity:
         list_uuid = str(uuid.uuid4())
         return prefix + list_uuid
 
-    def create_list_item(self, table_name):
+    def create_list_information_item(self, comment, updated_at):
+        # Get table_name from env instead
+        item = {
+            "Put": {
+                "TableName": self.table_name,
+                "Item": {
+                    "PK": {
+                        "S": self.list_id
+                    },
+                    "SK": {
+                        "S": "LIST"
+                    },
+                    "comment": {
+                        "S": comment
+                    },
+                    "updated_at": {
+                        "S": updated_at
+                    }
+                }
+            }
+        }
+        return item
+
+    def create_list_item(self):
         items = []
+        # Information about the list
+        # The contents of the list
         for row_no in range(1, self.list_size+1):
             item = {
                 "Put": {
@@ -52,13 +86,13 @@ class ListEntity:
                             "S": self.list_id
                         },
                         "SK": {
-                            "S": f"LIST#{self.list_id}#ROW_{row_no}"
+                            "S": f"{self.list_id}#ROW_{row_no}"
                         },
                         "content": {
-                            "S": self.fav_list[row_no]['content']
+                            "S": ""
                         }
                     },
-                    "TableName": table_name
+                    "TableName": self.table_name
                 }
             }
             items.append(item)

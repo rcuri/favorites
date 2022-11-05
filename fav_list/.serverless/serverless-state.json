@@ -248,7 +248,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/sign_up/handler.handler",
               "Runtime": "python3.8",
@@ -279,7 +279,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/create_list/handler.handler",
               "Runtime": "python3.8",
@@ -310,7 +310,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/update_list_metadata/handler.handler",
               "Runtime": "python3.8",
@@ -341,7 +341,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/update_list_contents/handler.handler",
               "Runtime": "python3.8",
@@ -372,7 +372,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/get_list/handler.handler",
               "Runtime": "python3.8",
@@ -403,7 +403,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/functions/get_user_lists/handler.handler",
               "Runtime": "python3.8",
@@ -434,7 +434,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/handlers/list_all_history_per_list_id.handler",
               "Runtime": "python3.8",
@@ -465,7 +465,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z/favorites.zip"
+                "S3Key": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z/favorites.zip"
               },
               "Handler": "src/handlers/get_user_by_email.handler",
               "Runtime": "python3.8",
@@ -651,13 +651,13 @@
               "TimeoutInMillis": 6500
             }
           },
-          "HttpApiRoutePostLists": {
+          "HttpApiRoutePostList": {
             "Type": "AWS::ApiGatewayV2::Route",
             "Properties": {
               "ApiId": {
                 "Ref": "HttpApi"
               },
-              "RouteKey": "POST /lists",
+              "RouteKey": "POST /list",
               "Target": {
                 "Fn::Join": [
                   "/",
@@ -1338,12 +1338,12 @@
         "events": [
           {
             "httpApi": {
-              "path": "/lists",
+              "path": "/list",
               "method": "POST",
               "authorizer": "serviceAuthorizer"
             },
             "resolvedMethod": "POST",
-            "resolvedPath": "/lists"
+            "resolvedPath": "/list"
           }
         ],
         "name": "favorites-dev-create_list",
@@ -1551,7 +1551,7 @@
     "artifact": "/home/rcuriel/Projects/fav_list/.serverless/favorites.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/favorites/dev/1660287301124-2022-08-12T06:55:01.124Z",
+    "artifactDirectoryName": "serverless/favorites/dev/1667629250619-2022-11-05T06:20:50.619Z",
     "artifact": "favorites.zip"
   }
 }

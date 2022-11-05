@@ -8,43 +8,11 @@ from src.models.list_entity import ListEntity
 dynamodb = boto3.client('dynamodb')
 table_name = os.environ['FAVORITES_TABLE_NAME']
 
-def update_list_contents(list_id, fav_list):
-    item_data = {
-        "list_id": list_id,
-        "data": fav_list
-    }
-    list_contents = ListEntity(item_data)
-    updated_items = list_contents.update_list_item(table_name)
-    """
-    list_items = []
-    for item in fav_list:
-        list_item = {
-            "Update": {
-                "TableName": table_name,
-                "Key": {
-                    "PK": {
-                        "S": list_id
-                    },
-                    "SK": {
-                        "S": item['name']
-                    }
-                }
-            }
-        }
-        vals, exp, attr_names = build_update_expression(item['data'])            
-        print(vals)
-        print(exp)
-        print(attr_names)
-        list_item['Update']['UpdateExpression'] = exp
-        list_item['Update']['ExpressionAttributeNames'] = attr_names
-        list_item['Update']['ExpressionAttributeValues'] = vals
-        list_items.append(list_item)
-    """
+def update_list_contents(list_uuid, fav_list):
+    list_id = f"LIST#{list_uuid}"
+    updated_items = ListEntity.update_list_item(list_id, fav_list, table_name)
     try:
-        print("TRYING TO WRITE")
         response = dynamodb.transact_write_items(TransactItems=updated_items)
-        print("IT WORKS")
-        print(response)
         body = {
             "response": response
         }

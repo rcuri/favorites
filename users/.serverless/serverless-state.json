@@ -211,7 +211,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
+                "S3Key": "serverless/users/dev/1667629236471-2022-11-05T06:20:36.471Z/users.zip"
               },
               "Handler": "src/handlers/sign_up.handler",
               "Runtime": "python3.8",
@@ -250,7 +250,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
+                "S3Key": "serverless/users/dev/1667629236471-2022-11-05T06:20:36.471Z/users.zip"
               },
               "Handler": "src/handlers/sign_in.handler",
               "Runtime": "python3.8",
@@ -289,7 +289,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z/users.zip"
+                "S3Key": "serverless/users/dev/1667629236471-2022-11-05T06:20:36.471Z/users.zip"
               },
               "Handler": "src/handlers/confirm_email_address.handler",
               "Runtime": "python3.8",
@@ -1165,7 +1165,7 @@
     "artifact": "/home/rcuriel/Projects/users/.serverless/users.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/users/dev/1660287268903-2022-08-12T06:54:28.903Z",
+    "artifactDirectoryName": "serverless/users/dev/1667629236471-2022-11-05T06:20:36.471Z",
     "artifact": "users.zip"
   }
 }

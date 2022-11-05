@@ -13,10 +13,11 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['FAVORITES_TABLE_NAME'])
 
 
-def update_list_metadata(list_id, data):
+def update_list_metadata(list_uuid, data, user):
+    list_id = f"LIST#{list_id}"
+    user = user
     logger.info(f"Updating list: {list_id}")
     logger.info("submitted data {}".format(data))
-    user = "rodrigocuriel95@gmail.com"
 
     try:
         vals, exp, attr_names = build_update_expression(data)

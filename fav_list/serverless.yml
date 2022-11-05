@@ -38,7 +38,7 @@ functions:
     handler: src/functions/create_list/handler.handler
     events:
       - httpApi:
-          path: /lists
+          path: /list
           method: POST
           authorizer: serviceAuthorizer
   update_list_metadata:

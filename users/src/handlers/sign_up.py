@@ -4,7 +4,7 @@ import os
 from http import HTTPStatus
 import json
 from decimal import Decimal
-
+import base64
 
 def handler(event, context):
     cidp = boto3.client('cognito-idp')
