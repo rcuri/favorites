@@ -3,17 +3,19 @@ import boto3
 import os
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
-import time
 from http import HTTPStatus
 from src.encoders import DecimalEncoder
 from src.util import build_update_expression
+from aws_lambda_powertools import Logger
 
+logger = Logger(service="update_list_metadata")
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['FAVORITES_TABLE_NAME'])
 
 
 def update_list_metadata(list_id, data):
-    print(f"Getting list {list_id}")
+    logger.info(f"Updating list: {list_id}")
+    logger.info("submitted data {}".format(data))
     user = "rodrigocuriel95@gmail.com"
 
     try:

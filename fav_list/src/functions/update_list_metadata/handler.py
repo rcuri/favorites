@@ -10,4 +10,4 @@ def handler(event, context):
     body = json.loads(event['body'])
     list_id = body['list_id']
     item_data = body['data']
-    return update_list_metadata(body['list_id'], data)
+    return update_list_metadata(list_id, item_data)
