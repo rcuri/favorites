@@ -1,33 +1,62 @@
-from src.util import build_update_expression
+import os
 
 class ListMetadataEntity:
-    def __init__(self, item=None):
-        if item is None:
-            item = {}
-        self.list_id = item['PK']
-        self.name = item['SK']
-        self.list_data = item['data']
+    table_name = os.environ['FAVORITES_TABLE_NAME']        
 
+    def __init__(self, item):
+        self.username = item['username']
+        self.list_id = item['list_id']
+        self.list_size = item['list_size']
+        self.created_at = item['created_at']
+        self.visibility = item['visibility']
+        self.title = item['title']
+        self.description = item['description']
+        self.notes = item['notes']
 
-    def update_list_item (self, data, table_name):
-        items = []
-        for item in self.list_data:
-            list_item = {
-                "Update": {
-                    "TableName": table_name,
-                    "Key": {
-                        "PK": {
-                            "S": list_id
-                        },
-                        "SK": {
-                            "S": item['name']
-                        }
+    def generate_put_metadata_list_item(self):
+        item = {
+            "Put": {
+                "Item": {
+                    "PK": {
+                        "S": self.username
+                    },
+                    "SK": {
+                        "S": self.list_id
+                    },
+                    "list_size": {
+                        "N": str(self.list_size)
+                    },
+                    "created_at": {
+                        "S": self.created_at
+                    },
+                    "visibility": {
+                        "S": self.visibility
+                    },
+                    "title": {
+                        "S": self.title
+                    },
+                    "descripton": {
+                        "S": self.description
+                    },
+                    "notes": {
+                        "S": self.notes
                     }
-                }
+                },
+                "TableName": ListMetadataEntity.table_name
             }
-            vals, exp, attr_names = build_update_expression(item['data'])            
-            list_item['Update']['UpdateExpression'] = exp
-            list_item['Update']['ExpressionAttributeNames'] = attr_names
-            list_item['Update']['ExpressionAttributeValues'] = vals
-            items.append(list_item)            
-        return items
+        }
+        return item
+
+    @classmethod
+    def build_update_expression(cls, data):
+        pf = 'prefix'
+        vals = {}
+        exp = 'SET '
+        attr_names = {}
+        for key,value in data.items():
+            vals[':{}'.format(key)] = value
+            attr_names['#pf_{}'.format(key)] = key
+            exp += '#pf_{} = :{},'.format(key, key)
+        exp = exp.rstrip(",")
+        return vals, exp, attr_names        
+

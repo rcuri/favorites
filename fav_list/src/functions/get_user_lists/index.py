@@ -1,10 +1,8 @@
-import json
 import boto3
 import os
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from http import HTTPStatus
-from src.encoders import DecimalEncoder
 from aws_lambda_powertools import Logger
 
 
@@ -18,15 +16,18 @@ def list_all_lists_per_user(username):
         response = table.query(
             KeyConditionExpression=Key('PK').eq(username) & Key('SK').begins_with(f"LIST#")
         )
+        list_items = []
+        for item in response['Items']:
+            list_response = {
+                "list_id": item['SK'].replace("LIST#", ""),
+                "title": item['title'],
+                "description": item.get('description', "")
+            }
+            list_items.append(list_response)
         logger.info("response is {}".format(response))
-        body = {
-            "response": response
+        return {
+            "list_items": list_items
         }
-        http_response = {
-            "statusCode": HTTPStatus.OK,
-            "body": json.dumps(body, cls=DecimalEncoder)
-        }
-        return http_response
     except ClientError as err:
         print("An error has occurred")
         print(err)

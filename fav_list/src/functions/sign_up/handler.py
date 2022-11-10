@@ -1,5 +1,5 @@
 from .index import sign_up_user
-from aws_lambda_powertools import Logger, Tracer
+from aws_lambda_powertools import Logger
 
 logger = Logger(service="sign_up")
 

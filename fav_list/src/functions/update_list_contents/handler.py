@@ -1,6 +1,6 @@
 import json
 from src.functions.update_list_contents.index import update_list_contents
-from aws_lambda_powertools import Logger, Tracer
+from aws_lambda_powertools import Logger
 
 logger = Logger(service="update_list_contents")
 

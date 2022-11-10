@@ -1,61 +1,43 @@
 import json
 import boto3
 import os
-import uuid
 from src.models.list_entity import ListEntity
+from src.models.list_metadata_entity import ListMetadataEntity
 from datetime import datetime
 
 dynamodb = boto3.client('dynamodb')
 table_name = os.environ['FAVORITES_TABLE_NAME']
 
 def create_list(
-        title, fav_list, visibility, 
-        description, notes, comment, user
+        title, visibility, 
+        description, notes, comment, username
 ):
     new_list = ListEntity()
-    username = user
-    list_items = []
-    timestamp = datetime.now().isoformat(timespec='seconds')    
-    user_item = {
-        "Put": {
-            "Item": {
-                "PK": {
-                    "S": username
-                },
-                "SK": {
-                    "S": new_list.get_list_id()
-                },
-                "list_size": {
-                    "N": str(new_list.get_list_size())
-                },
-                "created_at": {
-                    "S": notes
-                },
-                "updated_at": {
-                    "S": timestamp
-                },
-                "visibility": {
-                    "S": visibility
-                },
-                "title": {
-                    "S": title
-                },
-                "descripton": {
-                    "S": description
-                },
-                "notes": {
-                    "S": notes
-                }
-            },
-            "TableName": table_name
-        }
+    list_id = new_list.get_list_id()
+    timestamp = datetime.now().isoformat(timespec='seconds')
+
+    # Create the actual contents of the empty list and generate a DynamoDB put item
+    list_items = new_list.generate_empty_list_put_item()
+
+    # Create Metadata object to generate a DynamoDB put item
+    metadata_data = {
+        "username": username,
+        "list_id": list_id,
+        "list_size": new_list.get_list_size(),
+        "created_at": timestamp,
+        "visibility": visibility,
+        "title": title,
+        "description": description,
+        "notes": notes
     }
-    list_items.append(user_item)
-    favorites_list_information = new_list.create_list_information_item(comment, timestamp)
-    list_items.append(favorites_list_information)    
-    list_items.extend(new_list.get_list_items())
+    metadata_entity = ListMetadataEntity(metadata_data)
+    list_items.append(metadata_entity.generate_put_metadata_list_item())
     try:
-        response = dynamodb.transact_write_items(TransactItems=list_items)
-        return user_item
+        db_response = dynamodb.transact_write_items(TransactItems=list_items)
+        response = {
+            "message": "Successfully created list",
+            "list_id": list_id.replace("LIST#", "")
+        }
+        return response
     except Exception as err:
         raise err

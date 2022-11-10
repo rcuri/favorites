@@ -4,11 +4,12 @@ import os
 
 
 class ListEntity:
+    table_name = os.environ['FAVORITES_TABLE_NAME']
+
     def __init__(self):
-        self.table_name = os.environ['FAVORITES_TABLE_NAME']
         self.list_id = self.generate_list_id()
         self.list_size = 20
-        self.favorites_list = self.create_list_item()
+        self.favorites_list = []
 
 
     @classmethod
@@ -17,7 +18,7 @@ class ListEntity:
         for item in list_data:
             list_item = {
                 "Update": {
-                    "TableName": table_name,
+                    "TableName": ListEntity.table_name,
                     "Key": {
                         "PK": {
                             "S": list_id
@@ -46,35 +47,12 @@ class ListEntity:
 
     def generate_list_id(self, prefix=None):
         if not prefix:
-            prefix = ""
-        prefix = "LIST#"
+            prefix = "LIST#"
         list_uuid = str(uuid.uuid4())
         return prefix + list_uuid
 
-    def create_list_information_item(self, comment, updated_at):
-        # Get table_name from env instead
-        item = {
-            "Put": {
-                "TableName": self.table_name,
-                "Item": {
-                    "PK": {
-                        "S": self.list_id
-                    },
-                    "SK": {
-                        "S": "LIST"
-                    },
-                    "comment": {
-                        "S": comment
-                    },
-                    "updated_at": {
-                        "S": updated_at
-                    }
-                }
-            }
-        }
-        return item
 
-    def create_list_item(self):
+    def generate_empty_list_put_item(self):
         items = []
         # Information about the list
         # The contents of the list
@@ -92,8 +70,8 @@ class ListEntity:
                             "S": ""
                         }
                     },
-                    "TableName": self.table_name
+                    "TableName": ListEntity.table_name
                 }
             }
             items.append(item)
-        return items
+        return items        
