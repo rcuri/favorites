@@ -13,8 +13,8 @@ table = dynamodb.Table(os.environ['FAVORITES_TABLE_NAME'])
 
 
 def update_list_metadata(list_uuid, data, username):
-    list_id = f"LIST#{list_uuid}"
-    logger.info(f"Updating list: {list_id}")
+    metadata_id = f"LIST_METADATA#{list_uuid}"
+    logger.info(f"Updating list: {metadata_id}")
     logger.info("submitted data {}".format(data))
 
     try:
@@ -22,7 +22,7 @@ def update_list_metadata(list_uuid, data, username):
         response = table.update_item(
             Key={
                 "PK": username,
-                "SK": list_id 
+                "SK": metadata_id 
             },
             ConditionExpression="attribute_exists(PK)",
             UpdateExpression=exp,

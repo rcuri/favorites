@@ -7,13 +7,12 @@ class ListEntity:
     table_name = os.environ['FAVORITES_TABLE_NAME']
 
     def __init__(self):
+        self.list_uuid = self.generate_list_uuid()        
         self.list_id = self.generate_list_id()
         self.list_size = 20
-        self.favorites_list = []
-
 
     @classmethod
-    def update_list_item(cls, list_id, list_data, table_name):
+    def update_list_item(cls, list_id, list_data, username):
         items = []
         for item in list_data:
             list_item = {
@@ -21,7 +20,7 @@ class ListEntity:
                     "TableName": ListEntity.table_name,
                     "Key": {
                         "PK": {
-                            "S": list_id
+                            "S": username
                         },
                         "SK": {
                             "S": item['name']
@@ -36,23 +35,45 @@ class ListEntity:
             items.append(list_item)            
         return items
 
+    @classmethod
+    def generate_delete_list_items(cls, list_uuid, username):
+        items = []
+        # 21 since max list size is 20.
+        # TODO pass in list_size as parameter
+        for row_no in range(1, 21):
+            row_name = f"LIST#{list_uuid}#ROW_{row_no}"
+            list_item = {
+                "Delete": {
+                    "TableName": ListEntity.table_name,
+                    "Key": {
+                        "PK": {
+                            "S": username
+                        },
+                        "SK": {
+                            "S": row_name
+                        }
+                    }
+                }
+            }
+            items.append(list_item)            
+        return items        
+
     def get_list_size(self):
         return self.list_size
 
-    def get_list_id(self):
-        return self.list_id
+    def get_list_uuid(self):
+        return self.list_uuid
 
-    def get_list_items(self):
-        return self.favorites_list
-
-    def generate_list_id(self, prefix=None):
-        if not prefix:
-            prefix = "LIST#"
+    def generate_list_uuid(self):
         list_uuid = str(uuid.uuid4())
-        return prefix + list_uuid
+        return list_uuid
+
+    def generate_list_id(self):
+        prefix = "LIST#"
+        return prefix + self.list_uuid
 
 
-    def generate_empty_list_put_item(self):
+    def generate_empty_list_put_item(self, username):
         items = []
         # Information about the list
         # The contents of the list
@@ -61,7 +82,7 @@ class ListEntity:
                 "Put": {
                     "Item": {
                         "PK": {
-                            "S": self.list_id
+                            "S": username
                         },
                         "SK": {
                             "S": f"{self.list_id}#ROW_{row_no}"

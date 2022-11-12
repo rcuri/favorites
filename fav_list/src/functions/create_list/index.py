@@ -13,16 +13,16 @@ def create_list(
         description, notes, comment, username
 ):
     new_list = ListEntity()
-    list_id = new_list.get_list_id()
+    list_uuid = new_list.get_list_uuid()
     timestamp = datetime.now().isoformat(timespec='seconds')
 
     # Create the actual contents of the empty list and generate a DynamoDB put item
-    list_items = new_list.generate_empty_list_put_item()
+    list_items = new_list.generate_empty_list_put_item(username)
 
     # Create Metadata object to generate a DynamoDB put item
     metadata_data = {
         "username": username,
-        "list_id": list_id,
+        "list_uuid": list_uuid,
         "list_size": new_list.get_list_size(),
         "created_at": timestamp,
         "visibility": visibility,
@@ -34,9 +34,10 @@ def create_list(
     list_items.append(metadata_entity.generate_put_metadata_list_item())
     try:
         db_response = dynamodb.transact_write_items(TransactItems=list_items)
+        print(db_response)
         response = {
             "message": "Successfully created list",
-            "list_id": list_id.replace("LIST#", "")
+            "list_id": list_uuid
         }
         return response
     except Exception as err:

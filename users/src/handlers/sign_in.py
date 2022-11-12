@@ -5,7 +5,6 @@ import json
 
 
 def handler(event, context):
-    print("BEGINNING SIGN IN")
     print(event)
     cidp = boto3.client('cognito-idp')
     pool_client_id = os.getenv('FAVORITES_USER_POOL_CLIENT_ID')

@@ -57,7 +57,6 @@ def handler(event, context):
                 "message": "An unexpected error has occurred"
             }
             return response
-    print("User signed up")
     user_pool_id = os.getenv('FAVORITES_USER_POOL_ID')
     verification_required_grp = os.getenv('AWAITING_VERIFICATION_GROUP_NAME')
     try:
@@ -66,29 +65,12 @@ def handler(event, context):
             Username=email,
             GroupName=verification_required_grp
         )
-        print("Successfully added user to group")
-        body = {
-            "response": add_to_group_rsp
-        }
-        http_response = {
-            "statusCode": HTTPStatus.OK,
-            "body": json.dumps(body, cls=DecimalEncoder)
-        }     
-        return http_response   
+        print("Successfully added user to group")   
     except Exception as e:
         raise e
-        print(e)
-        return {
-            "statusCode": HTTPStatus.BAD_REQUEST,
-            "message": str(e)
-        }
-    print("User added to group")
-    body = {
-        "message": "User successfully signed up."
-    }
     response = {
-        "statusCode": HTTPStatus.OK,
-        "body": json.dumps(body)
+        "message": "User successfully signed up.",
+        "cognito_user_id": sign_up_rsp['UserSub']
     }
     return response
 

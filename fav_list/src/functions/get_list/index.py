@@ -1,10 +1,8 @@
-import json
 import boto3
 import os
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from http import HTTPStatus
-from src.encoders import DecimalEncoder
 from aws_lambda_powertools import Logger
 from collections import defaultdict
 
@@ -14,12 +12,12 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['FAVORITES_TABLE_NAME'])
 
 
-def get_list_by_id(list_uuid):
+def get_list_by_id(list_uuid, username):
     list_id = f"LIST#{list_uuid}"
     logger.debug(f"Getting list: {list_id}")
     try:
         db_response = table.query(
-            KeyConditionExpression=Key('PK').eq(list_id) & Key('SK').begins_with(f"{list_id}#ROW")
+            KeyConditionExpression=Key('PK').eq(username) & Key('SK').begins_with(f"{list_id}#ROW")
         )
         response = {
             "list_id": list_uuid,

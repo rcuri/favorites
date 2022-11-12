@@ -7,5 +7,5 @@ logger = Logger(service="get_user_lists")
 # Change to admin route 
 @logger.inject_lambda_context(log_event=True)
 def handler(event, context):
-    username = event['pathParameters']['email']
+    username = event['requestContext']['authorizer']['jwt']['claims']['sub']
     return list_all_lists_per_user(username)

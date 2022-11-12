@@ -83,6 +83,12 @@
         "LogGroupName": "/aws/lambda/favorites-dev-create_list"
       }
     },
+    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/favorites-dev-list_all_lists_per_user"
+      }
+    },
     "UpdateUnderscorelistUnderscoremetadataLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -101,22 +107,10 @@
         "LogGroupName": "/aws/lambda/favorites-dev-get_list_by_list_id"
       }
     },
-    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLogGroup": {
+    "DeleteUnderscorelistLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/favorites-dev-list_all_lists_per_user"
-      }
-    },
-    "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/favorites-dev-list_all_history_per_list_id"
-      }
-    },
-    "GetUnderscoreuserUnderscorebyUnderscoreemailLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/favorites-dev-get_user_by_email"
+        "LogGroupName": "/aws/lambda/favorites-dev-delete_list"
       }
     },
     "IamRoleLambdaExecution": {
@@ -181,7 +175,8 @@
                   "Action": [
                     "dynamodb:PutItem",
                     "dynamodb:Query",
-                    "dynamodb:UpdateItem"
+                    "dynamodb:UpdateItem",
+                    "dynamodb:DeleteItem"
                   ],
                   "Resource": {
                     "Fn::GetAtt": [
@@ -217,7 +212,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
         "Handler": "src/functions/sign_up/handler.handler",
         "Runtime": "python3.8",
@@ -248,7 +243,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
         "Handler": "src/functions/create_list/handler.handler",
         "Runtime": "python3.8",
@@ -272,6 +267,37 @@
         "CreateUnderscorelistLogGroup"
       ]
     },
+    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "ServerlessDeploymentBucket"
+          },
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
+        },
+        "Handler": "src/functions/get_user_lists/handler.handler",
+        "Runtime": "python3.8",
+        "FunctionName": "favorites-dev-list_all_lists_per_user",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "FAVORITES_TABLE_NAME": "dev-favorites-favorites-table",
+            "USERS_HTTP_API_URL": "https://8n0hu29ljc.execute-api.us-east-1.amazonaws.com"
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "IamRoleLambdaExecution",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLogGroup"
+      ]
+    },
     "UpdateUnderscorelistUnderscoremetadataLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -279,7 +305,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
         "Handler": "src/functions/update_list_metadata/handler.handler",
         "Runtime": "python3.8",
@@ -310,7 +336,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
         "Handler": "src/functions/update_list_contents/handler.handler",
         "Runtime": "python3.8",
@@ -341,7 +367,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
         "Handler": "src/functions/get_list/handler.handler",
         "Runtime": "python3.8",
@@ -365,18 +391,18 @@
         "GetUnderscorelistUnderscorebyUnderscorelistUnderscoreidLogGroup"
       ]
     },
-    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction": {
+    "DeleteUnderscorelistLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
+          "S3Key": "serverless/favorites/dev/1668243062850-2022-11-12T08:51:02.850Z/favorites.zip"
         },
-        "Handler": "src/functions/get_user_lists/handler.handler",
+        "Handler": "src/functions/delete_list/handler.handler",
         "Runtime": "python3.8",
-        "FunctionName": "favorites-dev-list_all_lists_per_user",
+        "FunctionName": "favorites-dev-delete_list",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -393,69 +419,7 @@
         }
       },
       "DependsOn": [
-        "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLogGroup"
-      ]
-    },
-    "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
-        },
-        "Handler": "src/handlers/list_all_history_per_list_id.handler",
-        "Runtime": "python3.8",
-        "FunctionName": "favorites-dev-list_all_history_per_list_id",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Environment": {
-          "Variables": {
-            "FAVORITES_TABLE_NAME": "dev-favorites-favorites-table",
-            "USERS_HTTP_API_URL": "https://8n0hu29ljc.execute-api.us-east-1.amazonaws.com"
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLogGroup"
-      ]
-    },
-    "GetUnderscoreuserUnderscorebyUnderscoreemailLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/favorites/dev/1668061007025-2022-11-10T06:16:47.025Z/favorites.zip"
-        },
-        "Handler": "src/handlers/get_user_by_email.handler",
-        "Runtime": "python3.8",
-        "FunctionName": "favorites-dev-get_user_by_email",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Environment": {
-          "Variables": {
-            "FAVORITES_TABLE_NAME": "dev-favorites-favorites-table",
-            "USERS_HTTP_API_URL": "https://8n0hu29ljc.execute-api.us-east-1.amazonaws.com"
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "GetUnderscoreuserUnderscorebyUnderscoreemailLogGroup"
+        "DeleteUnderscorelistLogGroup"
       ]
     },
     "HttpApi": {
@@ -626,13 +590,13 @@
         "TimeoutInMillis": 6500
       }
     },
-    "HttpApiRoutePostList": {
+    "HttpApiRoutePostLists": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "POST /list",
+        "RouteKey": "POST /lists",
         "Target": {
           "Fn::Join": [
             "/",
@@ -650,6 +614,85 @@
         }
       },
       "DependsOn": "HttpApiIntegrationCreateUnderscorelist"
+    },
+    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "HttpApi"
+              },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteGetLists": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApi"
+        },
+        "RouteKey": "GET /lists",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            [
+              "integrations",
+              {
+                "Ref": "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser"
+              }
+            ]
+          ]
+        },
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "HttpApiAuthorizerServiceAuthorizer"
+        }
+      },
+      "DependsOn": "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser"
     },
     "UpdateUnderscorelistUnderscoremetadataLambdaPermissionHttpApi": {
       "Type": "AWS::Lambda::Permission",
@@ -705,13 +748,13 @@
         "TimeoutInMillis": 6500
       }
     },
-    "HttpApiRoutePutListsListidVar": {
+    "HttpApiRoutePatchListsListidVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "PUT /lists/{list_id}",
+        "RouteKey": "PATCH /lists/{list_id}",
         "Target": {
           "Fn::Join": [
             "/",
@@ -784,13 +827,13 @@
         "TimeoutInMillis": 6500
       }
     },
-    "HttpApiRoutePostListsListidVar": {
+    "HttpApiRoutePutListsListidVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "POST /lists/{list_id}",
+        "RouteKey": "PUT /lists/{list_id}",
         "Target": {
           "Fn::Join": [
             "/",
@@ -888,12 +931,12 @@
       },
       "DependsOn": "HttpApiIntegrationGetUnderscorelistUnderscorebyUnderscorelistUnderscoreid"
     },
-    "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaPermissionHttpApi": {
+    "DeleteUnderscorelistLambdaPermissionHttpApi": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction",
+            "DeleteUnderscorelistLambdaFunction",
             "Arn"
           ]
         },
@@ -925,7 +968,7 @@
         }
       }
     },
-    "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser": {
+    "HttpApiIntegrationDeleteUnderscorelist": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -934,7 +977,7 @@
         "IntegrationType": "AWS_PROXY",
         "IntegrationUri": {
           "Fn::GetAtt": [
-            "ListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuserLambdaFunction",
+            "DeleteUnderscorelistLambdaFunction",
             "Arn"
           ]
         },
@@ -942,20 +985,20 @@
         "TimeoutInMillis": 6500
       }
     },
-    "HttpApiRouteGetUsersEmailVarLists": {
+    "HttpApiRouteDeleteListsListidVar": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
           "Ref": "HttpApi"
         },
-        "RouteKey": "GET /users/{email}/lists",
+        "RouteKey": "DELETE /lists/{list_id}",
         "Target": {
           "Fn::Join": [
             "/",
             [
               "integrations",
               {
-                "Ref": "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser"
+                "Ref": "HttpApiIntegrationDeleteUnderscorelist"
               }
             ]
           ]
@@ -965,165 +1008,7 @@
           "Ref": "HttpApiAuthorizerServiceAuthorizer"
         }
       },
-      "DependsOn": "HttpApiIntegrationListUnderscoreallUnderscorelistsUnderscoreperUnderscoreuser"
-    },
-    "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLambdaPermissionHttpApi": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "HttpApi"
-              },
-              "/*"
-            ]
-          ]
-        }
-      }
-    },
-    "HttpApiIntegrationListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreid": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "ListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreidLambdaFunction",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0",
-        "TimeoutInMillis": 6500
-      }
-    },
-    "HttpApiRouteGetListallhistoryperlistid": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "RouteKey": "GET /list_all_history_per_list_id",
-        "Target": {
-          "Fn::Join": [
-            "/",
-            [
-              "integrations",
-              {
-                "Ref": "HttpApiIntegrationListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreid"
-              }
-            ]
-          ]
-        },
-        "AuthorizationType": "JWT",
-        "AuthorizerId": {
-          "Ref": "HttpApiAuthorizerServiceAuthorizer"
-        }
-      },
-      "DependsOn": "HttpApiIntegrationListUnderscoreallUnderscorehistoryUnderscoreperUnderscorelistUnderscoreid"
-    },
-    "GetUnderscoreuserUnderscorebyUnderscoreemailLambdaPermissionHttpApi": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "GetUnderscoreuserUnderscorebyUnderscoreemailLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "HttpApi"
-              },
-              "/*"
-            ]
-          ]
-        }
-      }
-    },
-    "HttpApiIntegrationGetUnderscoreuserUnderscorebyUnderscoreemail": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "GetUnderscoreuserUnderscorebyUnderscoreemailLambdaFunction",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0",
-        "TimeoutInMillis": 6500
-      }
-    },
-    "HttpApiRoutePostUsersEmailVar": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "RouteKey": "POST /users/{email}",
-        "Target": {
-          "Fn::Join": [
-            "/",
-            [
-              "integrations",
-              {
-                "Ref": "HttpApiIntegrationGetUnderscoreuserUnderscorebyUnderscoreemail"
-              }
-            ]
-          ]
-        },
-        "AuthorizationType": "JWT",
-        "AuthorizerId": {
-          "Ref": "HttpApiAuthorizerServiceAuthorizer"
-        }
-      },
-      "DependsOn": "HttpApiIntegrationGetUnderscoreuserUnderscorebyUnderscoreemail"
+      "DependsOn": "HttpApiIntegrationDeleteUnderscorelist"
     },
     "FavoritesDynamoDBTable": {
       "Type": "AWS::DynamoDB::Table",

@@ -8,7 +8,7 @@ logger = Logger(service="create_list")
 @logger.inject_lambda_context(log_event=True)
 def handler(event, context):
     print(event)
-    username = event['requestContext']['authorizer']['jwt']['claims']['email']
+    username = event['requestContext']['authorizer']['jwt']['claims']['sub']
     body = json.loads(event['body']) 
     title = body['title']
     return create_list(

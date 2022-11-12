@@ -3,7 +3,6 @@ from botocore import exceptions as aws_exceptions
 import os
 from http import HTTPStatus
 import json
-from src.encoders import DecimalEncoder
 from src.services.users import UserService
 from aws_lambda_powertools import Logger
 
@@ -17,27 +16,24 @@ def sign_up_user(first_name, last_name, email, password):
         sign_up_response = user_service.sign_up(
             first_name, last_name, email, password
         )
+        # User will be identified in table by their Cognito ID
+        cognito_user_id = sign_up_response["cognito_user_id"]
         logger.info("User successfully registered with Cognito service")
         logger.debug("Cognito response is {}".format(sign_up_response))
-        response = table.put_item(
+        db_response = table.put_item(
             Item={
-                "PK": email,
+                "PK": cognito_user_id,
                 "SK": "USER",
                 "first_name": first_name,
                 "last_name": last_name
             }
         )
         logger.info("Successfully added user to Favorites table")
-        logger.debug("DynamoDB put_item response is {}".format(response))
-        body = {
-            "response": response,
-            "sign_up_response": sign_up_response.json()
+        logger.debug("DynamoDB put_item response is {}".format(db_response))
+        response = {
+            "message": "User successfully signed up"
         }
-        http_response = {
-            "statusCode": HTTPStatus.OK,
-            "body": json.dumps(body, cls=DecimalEncoder)
-        }     
-        return http_response   
+        return response  
     except Exception as e:
         raise e
         print(e)

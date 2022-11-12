@@ -14,12 +14,12 @@ def list_all_lists_per_user(username):
     logger.debug(f"Getting lists for user: {username}")
     try:
         response = table.query(
-            KeyConditionExpression=Key('PK').eq(username) & Key('SK').begins_with(f"LIST#")
+            KeyConditionExpression=Key('PK').eq(username) & Key('SK').begins_with(f"LIST_METADATA#")
         )
         list_items = []
         for item in response['Items']:
             list_response = {
-                "list_id": item['SK'].replace("LIST#", ""),
+                "list_id": item['SK'].replace("LIST_METADATA#", ""),
                 "title": item['title'],
                 "description": item.get('description', "")
             }

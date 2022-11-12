@@ -5,13 +5,18 @@ class ListMetadataEntity:
 
     def __init__(self, item):
         self.username = item['username']
-        self.list_id = item['list_id']
+        self.list_uuid = item['list_uuid']
+        self.metadata_id = self.generate_metadata_id()
         self.list_size = item['list_size']
         self.created_at = item['created_at']
         self.visibility = item['visibility']
         self.title = item['title']
         self.description = item['description']
         self.notes = item['notes']
+
+    def generate_metadata_id(self):
+        prefix = "LIST_METADATA#"
+        return prefix + self.list_uuid
 
     def generate_put_metadata_list_item(self):
         item = {
@@ -21,7 +26,7 @@ class ListMetadataEntity:
                         "S": self.username
                     },
                     "SK": {
-                        "S": self.list_id
+                        "S": self.metadata_id
                     },
                     "list_size": {
                         "N": str(self.list_size)
@@ -46,6 +51,24 @@ class ListMetadataEntity:
             }
         }
         return item
+
+    @classmethod
+    def generate_delete_metadata_item(cls, list_uuid, username):
+        metadata_id = f"LIST_METADATA#{list_uuid}"
+        item = {
+            "Delete": {
+                "TableName": ListMetadataEntity.table_name,
+                "Key": {
+                    "PK": {
+                        "S": username
+                    },
+                    "SK": {
+                        "S": metadata_id
+                    }
+                }
+            }
+        }
+        return [item]            
 
     @classmethod
     def build_update_expression(cls, data):

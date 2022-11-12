@@ -7,7 +7,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   versionFunctions: false
   runtime: python3.8
-  lambdaHashingVersion: 20201221  
+  lambdaHashingVersion: 20201221                 
   httpApi:
     authorizers:
       serviceAuthorizer:
@@ -23,6 +23,7 @@ provider:
         - 'dynamodb:PutItem'
         - 'dynamodb:Query'
         - 'dynamodb:UpdateItem'
+        - 'dynamodb:DeleteItem'
       Resource:
         Fn::GetAtt: [FavoritesDynamoDBTable, Arn]
 custom:
@@ -38,22 +39,29 @@ functions:
     handler: src/functions/create_list/handler.handler
     events:
       - httpApi:
-          path: /list
+          path: /lists
           method: POST
           authorizer: serviceAuthorizer
+  list_all_lists_per_user:
+    handler: src/functions/get_user_lists/handler.handler
+    events:
+      - httpApi:
+          path: /lists
+          method: GET  
+          authorizer: serviceAuthorizer          
   update_list_metadata:
     handler: src/functions/update_list_metadata/handler.handler
     events:
       - httpApi:
           path: /lists/{list_id}
-          method: PUT
+          method: PATCH
           authorizer: serviceAuthorizer
   update_list_contents:
     handler: src/functions/update_list_contents/handler.handler
     events:
       - httpApi:
           path: /lists/{list_id}
-          method: POST
+          method: PUT
           authorizer: serviceAuthorizer
   get_list_by_list_id:
     handler: src/functions/get_list/handler.handler
@@ -63,27 +71,14 @@ functions:
           path: /lists/{list_id}
           method: GET
           authorizer: serviceAuthorizer
-  list_all_lists_per_user:
-    handler: src/functions/get_user_lists/handler.handler
+  delete_list:
+    handler: src/functions/delete_list/handler.handler
+    private: true
     events:
       - httpApi:
-          path: /users/{email}/lists
-          method: GET  
-          authorizer: serviceAuthorizer
-  list_all_history_per_list_id:
-    handler: src/handlers/list_all_history_per_list_id.handler
-    events:
-      - httpApi:
-          path: /list_all_history_per_list_id
-          method: GET
-          authorizer: serviceAuthorizer
-  get_user_by_email:
-    handler: src/handlers/get_user_by_email.handler
-    events:
-      - httpApi:
-          path: /users/{email}
-          method: POST    
-          authorizer: serviceAuthorizer          
+          path: /lists/{list_id}
+          method: DELETE
+          authorizer: serviceAuthorizer                  
 resources:
   Resources:
     FavoritesDynamoDBTable:
@@ -99,7 +94,7 @@ resources:
           - AttributeName: PK
             KeyType: HASH
           - AttributeName: SK
-            KeyType: RANGE
+            KeyType: RANGE               
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1               
