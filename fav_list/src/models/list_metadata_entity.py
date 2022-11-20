@@ -40,7 +40,7 @@ class ListMetadataEntity:
                     "title": {
                         "S": self.title
                     },
-                    "descripton": {
+                    "description": {
                         "S": self.description
                     },
                     "notes": {
