@@ -12,10 +12,11 @@ def create_list(
         title, visibility, 
         description, notes, comment, username
 ):
+    print("table_name:", table_name)
+    print("Available tables:", dynamodb.list_tables(), sep='\n')
     new_list = ListEntity()
     list_uuid = new_list.get_list_uuid()
     timestamp = datetime.now().isoformat(timespec='seconds')
-
     # Create the actual contents of the empty list and generate a DynamoDB put item
     list_items = new_list.generate_empty_list_put_item(username)
 
@@ -34,7 +35,6 @@ def create_list(
     list_items.append(metadata_entity.generate_put_metadata_list_item())
     try:
         db_response = dynamodb.transact_write_items(TransactItems=list_items)
-        print(db_response)
         response = {
             "message": "Successfully created list",
             "list_id": list_uuid
