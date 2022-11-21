@@ -11,7 +11,6 @@ def test_successful_list_creation_response_body(valid_create_list_parameters, dy
         valid_create_list_parameters['visibility'],
         valid_create_list_parameters['description'],
         valid_create_list_parameters['notes'],
-        valid_create_list_parameters['comment'],
         valid_create_list_parameters['username']
     )
     assert isinstance(create_list_response, dict)
@@ -31,7 +30,6 @@ def test_successful_entities_created(valid_create_list_parameters, dynamodb_clie
         valid_create_list_parameters['visibility'],
         valid_create_list_parameters['description'],
         valid_create_list_parameters['notes'],
-        valid_create_list_parameters['comment'],
         valid_create_list_parameters['username']
     )
     username = valid_create_list_parameters['username']
@@ -80,7 +78,6 @@ def test_successful_entity_uuid_matches(valid_create_list_parameters, dynamodb_c
         valid_create_list_parameters['visibility'],
         valid_create_list_parameters['description'],
         valid_create_list_parameters['notes'],
-        valid_create_list_parameters['comment'],
         valid_create_list_parameters['username']
     )
     username = valid_create_list_parameters['username']
@@ -135,7 +132,6 @@ def test_valid_list_structure(valid_create_list_parameters, dynamodb_client):
         valid_create_list_parameters['visibility'],
         valid_create_list_parameters['description'],
         valid_create_list_parameters['notes'],
-        valid_create_list_parameters['comment'],
         valid_create_list_parameters['username']
     )
     username = valid_create_list_parameters['username']
@@ -170,7 +166,6 @@ def test_metadata_contains_all_attributes(
         valid_create_list_parameters['visibility'],
         valid_create_list_parameters['description'],
         valid_create_list_parameters['notes'],
-        valid_create_list_parameters['comment'],
         valid_create_list_parameters['username']
     )
     username = valid_create_list_parameters['username']
@@ -245,7 +240,6 @@ def valid_create_list_parameters():
         "visibility": "PRIVATE",
         "description": "This is a valid list for pytest.",
         "notes": "Keep on testing",
-        "comment": "test comment",
         "username": "testuser"
     }
     return item

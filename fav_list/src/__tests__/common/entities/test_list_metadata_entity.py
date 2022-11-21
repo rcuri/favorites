@@ -57,7 +57,7 @@ def valid_metadata():
 
 @pytest.fixture
 def invalid_metadata():
-    # Missing the username and list_uuid fields
+    # Missing the required username field
     item = {
         "list_uuid": "test_uuid",
         "list_size": 20,

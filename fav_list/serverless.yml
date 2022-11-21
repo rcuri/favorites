@@ -17,6 +17,7 @@ provider:
   environment:
     FAVORITES_TABLE_NAME: ${self:custom.FAVORITES_TABLE_NAME}
     USERS_HTTP_API_URL: ${cf:users-dev.HttpApiUrl}
+    MAX_LIST_SIZE: 20
   iamRoleStatements:
     - Effect: Allow
       Action: 

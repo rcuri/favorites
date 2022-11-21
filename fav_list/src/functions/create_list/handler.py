@@ -10,8 +10,7 @@ def handler(event, context):
     print(event)
     username = event['requestContext']['authorizer']['jwt']['claims']['sub']
     body = json.loads(event['body']) 
-    title = body['title']
     return create_list(
         body['title'], "PRIVATE",
-        body['description'], body['notes'], body['comment'], username
+        body['description'], body['notes'], username
     )
